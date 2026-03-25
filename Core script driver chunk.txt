@@ -1,0 +1,65 @@
+############################################################
+## Driver chunk for RStudio
+## Edit this block per experiment and run it.
+############################################################
+
+# 1. Source the core script
+source("core_analysis.R")
+
+# 2. User parameters (EDIT THESE)
+tidy_csv_file        <- "my_experiment_tidy.csv"
+plate_map_file       <- "my_experiment_platemap.csv"
+
+qc_output_file       <- "my_experiment_core_output_QC.xlsx"
+rds_output_file      <- "my_experiment_core_results.Rds"
+
+S0_uM                <- 5          # starting substrate concentration (µM)
+fit_window_min       <- 5          # legacy only; tracked in refs
+fraction_ceiling     <- 0.50       # fraction cleaved cutoff for slope fit
+wt_variant           <- "eTEVp"    # "WT-like" protease
+wt_wells_for_Rmax    <- c("A1","B1","C1")  # wells to trust for R_max_global
+# If you want all eTEVp wells automatically, set wt_wells_for_Rmax <- NULL
+
+plateau_points       <- 3          # fallback tail averaging window if no plateau detected
+plateau_span_cycles  <- 10         # how many cycles forward to check plateau stability
+plateau_tolerance    <- 0.01       # <=1% drift over that window => plateau
+
+# 3. Run pipeline
+results_list <- run_core_pipeline_from_tidy(
+  tidy_csv_file        = tidy_csv_file,
+  plate_map_file       = plate_map_file,
+  S0_uM                = S0_uM,
+  fit_window_min       = fit_window_min,
+  fraction_ceiling     = fraction_ceiling,
+  wt_variant           = wt_variant,
+  wt_wells_for_Rmax    = wt_wells_for_Rmax,
+  plateau_points       = plateau_points,
+  plateau_span_cycles  = plateau_span_cycles,
+  plateau_tolerance    = plateau_tolerance,
+  qc_output_file       = qc_output_file
+)
+
+# 4. Save full results to RDS for reuse
+saveRDS(results_list, rds_output_file)
+
+# 5. Quick console summary
+cat("\n=== Core pipeline finished ===\n")
+cat("Input tidy data:           ", tidy_csv_file,  "\n")
+cat("Input plate map:           ", plate_map_file, "\n")
+cat("QC workbook written to:    ", qc_output_file, "\n")
+cat("Full result list saved to: ", rds_output_file, "\n\n")
+
+cat("Reference values / settings:\n")
+print(results_list$refs)
+
+cat("\nPreview of rates_table:\n")
+print(
+  results_list$rates_table %>%
+    arrange(Variant, Condition, Well) %>%
+    head(10)
+)
+
+cat("\nPlateau detection diagnostics (trusted wells):\n")
+print(results_list$wt_plateau_by_well)
+
+cat("\nDone.\n")

@@ -1,0 +1,62 @@
+############################################
+## TEVp FRET plate import driver script  ##
+############################################
+
+## 1. Set working directory to the folder
+##    containing BOTH:
+##    - parse_plate.R
+##    - your raw plate .xlsx file
+##
+##    Edit this path to match your machine:
+setwd("C:/Users/Marius/Documents/Master's Thesis/Platereader datasets/Agilent Biotek Synergy H1/AI-design project")
+
+
+## 2. Source the parser script
+##    (this defines process_plate_file())
+source("parse_plate.R")
+
+
+## 3. Define run-specific parameters
+##    Edit these each time you analyze a new plate.
+
+# Name of the raw Excel file exported from the plate reader
+input_file <- "NtermLoopDesignpMT101106_14okt25_Activity1SCRUBBED.xlsx"
+
+# Which sheet in that Excel file to use.
+# Can be sheet index (1, 2, 3, ...) or a sheet name like "Results"
+sheet_id <- 1
+
+# Row range for the DONOR block (inclusive)
+# This should start at the header row for the donor block
+donor_start_row <- 10
+donor_end_row   <- 200
+
+# Row range for the ACCEPTOR block (inclusive)
+# This should start at the header row for the acceptor block
+acceptor_start_row <- 205
+acceptor_end_row   <- 395
+
+# Name for the tidy CSV output you want to generate
+output_file <- "NtermLoopDesignpMT101106_14okt25_Activity1_tidy.csv"
+
+
+## 4. Run the processing
+tidy_data <- process_plate_file(
+  input           = input_file,
+  sheet           = sheet_id,
+  donor_start     = donor_start_row,
+  donor_end       = donor_end_row,
+  acceptor_start  = acceptor_start_row,
+  acceptor_end    = acceptor_end_row,
+  output          = output_file
+)
+
+
+## 5. Inspect a preview
+cat("\n=== Preview of processed data ===\n")
+print(head(tidy_data, n = 10))
+
+cat("\nColumns in output:\n")
+print(colnames(tidy_data))
+
+cat("\nOutput written to: ", output_file, "\n")
