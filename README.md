@@ -18,7 +18,7 @@ The pipeline contains the following files:
 
 To run parse_plate.R and core_analysis_v2.R, use the driver FRET_Driver.Rmd.
 The R files contains various which can be downloaded in the first code block of FRET_Driver.RmD:
-'''{r}
+```{r}
 install.packages('optparse')
 install.packages('readxl')
 install.packages('dplyr')
@@ -29,7 +29,7 @@ install.packages('purrr')
 install.packages('readr')
 install.packages('writexl')
 install.packages('stats')
-'''
+```
 
 The file activity_analysis.ipynb uses the following packages:
 - pandas 
@@ -37,9 +37,9 @@ The file activity_analysis.ipynb uses the following packages:
 - numpy
 - scipy
 These can be downloaded in the terminal as follows:
-'''{bash}
+```{bash}
 pip install [insert package name]
-'''
+```
 
 ## How to run the pipeline
 0. Make sure to have an excel sheet of fluorometric data and csv file with plate map
