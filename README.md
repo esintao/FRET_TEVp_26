@@ -44,6 +44,7 @@ pip install [insert package name]
 ## How to run the pipeline
 0. Make sure to have an excel sheet of fluorometric data and csv file with plate map
 1. Run FRET_Driver.Rmd in order to run plate_map.R and core_analysis_v2.R
-2. Take the output QC file and run it in activity_analysis.R
+2. Take the output QC file and run it in activity_analysis.ipynb
+    - Due to the many plots and tables produced in activity_analysis.ipynb, it is recommended to separate folders for them.
 
 An example of how to run the pipeline can be found in the folder 'Output'
