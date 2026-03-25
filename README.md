@@ -8,7 +8,7 @@ The original fluorometric data can be found in the file: 'SUBGVP_Esin_20feb26.xl
 The plate map for the assay can be found in the file: 'SUBGVP_Esin_20feb26_platemap.csv'
 
 ## Acknowledgements
-
+The pipeline is adapted from Marius Krogsgaard Thomsen's original pipeline of the FRET-based kinetic assay. This pipeline is adapted to accomodate multiple substrates, whilst the original pipeline was constructed to analyse multiple TEVp variants.
 
 ## Description of data pipeline, including modules and packages
 The pipeline contains the following files:
