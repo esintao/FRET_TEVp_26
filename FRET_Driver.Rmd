@@ -1,0 +1,132 @@
+---
+title: "FRET_assay.md"
+output: html_document
+date: "2026-02-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Install packages 
+```{r}
+install.packages('optparse')
+install.packages('readxl')
+install.packages('dplyr')
+install.packages('tidyr')
+install.packages('stringr')
+install.packages('lubridate')
+install.packages('purrr')
+install.packages('readr')
+install.packages('writexl')
+install.packages('stats')
+```
+
+
+# Modules
+```{r}
+source("parse_plate.R")
+source("core_analysis_v2.R")
+```
+
+# Data cleaning
+```{r}
+# Name of the raw Excel file exported from the plate reader
+input_file <- "SUBGVP_Esin_20feb26.xlsx"
+
+# Which sheet in that Excel file to use.
+# Can be sheet index (1, 2, 3, ...) or a sheet name like "Results"
+sheet_id <- 1
+
+# Row range for the DONOR block (inclusive)
+# This should start at the header row for the donor block
+donor_start_row <- 34
+donor_end_row   <- 684
+
+# Row range for the ACCEPTOR block (inclusive)
+# This should start at the header row for the acceptor block
+acceptor_start_row <- 687
+acceptor_end_row   <- 1387
+
+# Name for the tidy CSV output you want to generate
+output_file <- "cleaned_data_FRET_20feb2026.csv"
+
+
+## 4. Run the processing
+tidy_data <- process_plate_file(
+  input           = input_file,
+  sheet           = sheet_id,
+  donor_start     = donor_start_row,
+  donor_end       = donor_end_row,
+  acceptor_start  = acceptor_start_row,
+  acceptor_end    = acceptor_end_row,
+  output          = output_file
+)
+
+
+## 5. Inspect a preview
+cat("\n=== Preview of processed data ===\n")
+print(head(tidy_data, n = 10))
+
+cat("\nColumns in output:\n")
+print(colnames(tidy_data))
+
+cat("\nOutput written to: ", output_file, "\n")
+
+
+```
+
+# Core analysis
+```{r}
+# 2. User parameters (EDIT THESE)
+tidy_csv_file        <- "cleaned_data_FRET_20feb2026.csv" # output from previous step
+plate_map_file       <- "SUBGVP_Esin_20feb26_platemap.csv" # plate map from assay
+qc_output_file       <- "SUBGVP_Esin_core_output_QC.xlsx" # name of core analysis QC workbook to output
+rds_output_file      <- "SUBGVP_core_results.Rds" # name of RDS file to save full results list to
+
+S0_uM                <- 5          # starting substrate concentration (µM)
+fit_window_min       <- 5          # legacy only; tracked in refs
+fraction_ceiling     <- 0.30       # fraction cleaved cutoff for slope fit
+wt_variant           <- "SubG"     # reference variant
+wt_wells_for_Rmax    <- NULL       # NULL = use all wells per variant for plateau detection
+
+plateau_points       <- 3          # fallback tail averaging window if no plateau detected
+plateau_span_cycles  <- 15         # how many cycles forward to check plateau stability
+plateau_tolerance    <- 0.01       # <=1% drift over that window => plateau
+
+# 3. Run pipeline
+results_list <- run_core_pipeline_from_tidy(
+  tidy_csv_file        = tidy_csv_file,
+  plate_map_file       = plate_map_file,
+  S0_uM                = S0_uM,
+  fit_window_min       = fit_window_min,
+  fraction_ceiling     = fraction_ceiling,
+  wt_wells_for_Rmax    = wt_wells_for_Rmax,
+  plateau_points       = plateau_points,
+  plateau_span_cycles  = plateau_span_cycles,
+  plateau_tolerance    = plateau_tolerance,
+  qc_output_file       = qc_output_file
+)
+
+
+
+# 5. Save full results to RDS for reuse
+saveRDS(results_list, rds_output_file)
+
+# 6. Quick console summary
+cat("\n=== Core pipeline finished ===\n")
+cat("Input tidy data:           ", tidy_csv_file,  "\n")
+cat("Input plate map:           ", plate_map_file, "\n")
+cat("QC workbook written to:    ", qc_output_file, "\n")
+cat("Full result list saved to: ", rds_output_file, "\n\n")
+cat("Reference values / settings:\n")
+print(results_list$refs)
+```
+
+
+
+
+
+
+
+
