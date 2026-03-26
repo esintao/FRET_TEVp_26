@@ -52,7 +52,7 @@ pip install [insert package name]
         -  tidy_csv_file: same as output_file
         -  plate_map_file: name of csv file with plate map
         -  qc_output_file: insert what you want to the QC excel file that is used for activity analysis
-        -  S0_uM: substrate concentration in $\mu$M.
+        -  S0_uM: substrate concentration in uM.
 3. Take the output QC file and cleaned csv file file and run it in activity_analysis.ipynb
    - file: name of output QC file
    - cleaned_csv: name of output csv file from step 1
