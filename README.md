@@ -16,8 +16,7 @@ The pipeline contains the following files:
 - core_analysis_v2.R: to correct for photobleaching, normalize the data and calculate initial rates
 - activity_analysis.ipynb: to find the $k_obs$ and plotting.
 
-To run parse_plate.R and core_analysis_v2.R, use the driver FRET_Driver.Rmd.
-The R files contains various which can be downloaded in the first code block of FRET_Driver.RmD:
+To run parse_plate.R and core_analysis_v2.R, use the driver FRET_Driver.Rmd. The R files contains various which can be downloaded in the first code block of FRET_Driver.RmD:
 ```{r}
 install.packages('optparse')
 install.packages('readxl')
@@ -36,15 +35,27 @@ The file activity_analysis.ipynb uses the following packages:
 - matplotlib
 - numpy
 - scipy
+  
 These can be downloaded in the terminal as follows:
 ```{bash}
 pip install [insert package name]
 ```
 
 ## How to run the pipeline
-0. Make sure to have an excel sheet of fluorometric data and csv file with plate map
-1. Run FRET_Driver.Rmd in order to run plate_map.R and core_analysis_v2.R
-2. Take the output QC file and run it in activity_analysis.ipynb
-    - Due to the many plots and tables produced in activity_analysis.ipynb, it is recommended to separate folders for them.
+0. Make sure to have an excel file of the fluorometric data of the assay and a csv file with the corresponding plate map.
+1. Run FRET_Driver.Rmd in order to run plate_map.R and core_analysis_v2.R.
+    - Important variables in "process_plate_file":
+          - input_file: name of excel file of raw fluorometric data
+          - output_file: insert what you want to call a cleaned csv file of the data
+          - donor_start_row, donor_end_row, acceptor_start_row, acceptor_end_row: write row ranges for donor and acceptor blocks from input file
+    - Important variables in "run_core_pipeline_from_tidy"
+        -  tidy_csv_file: same as output_file
+          - plate_map_file: name of csv file with plate map
+          - qc_output_file: insert what you want to the QC excel file that is used for activity analysis
+          - S0_uM: substrate concentration in $\mu$M.
+3. Take the output QC file and cleaned csv file file and run it in activity_analysis.ipynb
+   - file: name of output QC file
+   - cleaned_csv: name of output csv file from step 1
+   - Due to the many plots and tables produced in activity_analysis.ipynb, it is recommended to separate folders for them.
 
 An example of how to run the pipeline can be found in the folder 'Output'
